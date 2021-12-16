@@ -1,76 +1,38 @@
-from queue import Queue
-import math
+pick = []
+max_value=[]
 
-class TreeNode:
-    def __init__(self,val=None):
-        self.val = val
-        self.left = None
-        self.right = None
-        self.parent = None
-
-class BinaryTreeNode:
-    def __init__(self,val_list=[]):
-        self.root = None
-        for n in val_list:
-            self.insert(n)
-    
-    def insert(self,data):
-        if self.root is None:
-            self.root =TreeNode(data)
+def bag(capacity,cur_weight,item,pick_idx):
+    if pick_idx >= len(item) or cur_weight==capacity:
+        global max_value
+        if get_value(item,pick)>get_value(item,max_value):
+            max_value=pick.copy()
         else:
-            n=self.root
-            while n:
-                p=n
-                if data < n.val:
-                    n=n.left
-                else:
-                    n=n.right
-            new_node=TreeNode(data)
-            new_node.parent=p
-            if data<p.val:
-                p.left=new_node
-            else:
-                p.right=new_node
-        return True
+            item_weight = item[pick_idx][0]
+            if cur_weight + item_weight <=capacity:
+                pick[pick_idx]=1
+                bag(capacity,cur_weight+item_weight,item.pick_idx+1)
+            pick[pick_idx]=0
+            bag(capacity,cur_weight,item,pick_idx+1)
 
-    def search(self,data):
-        ret=[]
-        n=self.root
-        while n:
-            if data<n.val:
-                n=n.left
-            else:
-                if data==n.val:
-                    ret.append(n)
-                n=n.right
-        return ret
+def get_value(item,pick_item):
+    values=[_[1]for _ in item]
+    return sum([a*b for a,b in zip(values,pick_item)])
 
-    def delete(self,data):
-        del_list=self.search(data)
-        for n in del_list:
-            if n.parent is None and n!=self.root:
-                continue
-            else:
-                self.deleteNode(n)
+if __name__=='__main__':
+    item=[(3, 5), (2, 2), (1, 4), (1, 2), (4, 10)]
+    capacity=8
 
-    def deleteNode(self,node):
-        if node.left is None and node.right is None:
-            if node==self.root:
-                self.root=None
-            else:
-                if node.val<node.parent.val:
-                    node.parent.left=None
-                else:
-                    node.parent.right=None
-                node.parent=None
-        elif node.left is None and node.right is not None:
-            if node==self.root:
-                self.root=node.right
-                self.root.parent=None
-                node.right=None
-            else:
-                if node.val < node.parent.val:
-                    node.parent.left= node.right
-                else:
-                    node.parent.right=node.right
-                node.p
+    print('---item info---')
+    print(item)
+
+    print('\n---capcity---')
+    print(capacity)
+
+    pick=[0]*len(item)
+    bag(capacity,0,item,0)
+
+    print('\n---picks---')
+    print(max_value)
+
+    print('\n---value---')
+    print(get_value(item,max_value))
